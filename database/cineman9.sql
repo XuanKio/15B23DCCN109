@@ -5,110 +5,110 @@ USE cineman9;
 
 -- ===== Tài khoản và thành viên =====
 CREATE TABLE tblCinema9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     address VARCHAR(255) NOT NULL,
     phoneNumber VARCHAR(24) NOT NULL,
-    description TEXT NULL
+    description VARCHAR(255) NULL
 );
 
 CREATE TABLE tblAccount9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) NULL,
-    authenticationData VARCHAR(255) NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    authenticationData VARCHAR(255) NOT NULL,
     role VARCHAR(30) NOT NULL,
     status VARCHAR(30) NOT NULL,
     CONSTRAINT uqAccount9Username UNIQUE (username)
 );
 
 CREATE TABLE tblEmployee9 (
-    id BIGINT PRIMARY KEY,
+    tblAccount9id INT PRIMARY KEY,
     employeeCode VARCHAR(30) NOT NULL,
     fullName VARCHAR(100) NOT NULL,
-    cinemaId BIGINT NOT NULL,
+    tblCinema9id INT NOT NULL,
     CONSTRAINT uqEmployee9Code UNIQUE (employeeCode),
-    CONSTRAINT fkEmployee9Account FOREIGN KEY (id) REFERENCES tblAccount9(id),
-    CONSTRAINT fkEmployee9Cinema FOREIGN KEY (cinemaId) REFERENCES tblCinema9(id)
+    CONSTRAINT fkEmployee9Account FOREIGN KEY (tblAccount9id) REFERENCES tblAccount9(id),
+    CONSTRAINT fkEmployee9Cinema FOREIGN KEY (tblCinema9id) REFERENCES tblCinema9(id)
 );
 
 CREATE TABLE tblManager9 (
-    id BIGINT PRIMARY KEY,
-    CONSTRAINT fkManager9Employee FOREIGN KEY (id) REFERENCES tblEmployee9(id)
+    tblEmployee9id INT PRIMARY KEY,
+    CONSTRAINT fkManager9Employee FOREIGN KEY (tblEmployee9id) REFERENCES tblEmployee9(tblAccount9id)
 );
 
 CREATE TABLE tblSalesEmployee9 (
-    id BIGINT PRIMARY KEY,
-    CONSTRAINT fkSalesEmployee9Employee FOREIGN KEY (id) REFERENCES tblEmployee9(id)
+    tblEmployee9id INT PRIMARY KEY,
+    CONSTRAINT fkSalesEmployee9Employee FOREIGN KEY (tblEmployee9id) REFERENCES tblEmployee9(tblAccount9id)
 );
 
 CREATE TABLE tblCustomer9 (
-    id BIGINT PRIMARY KEY,
+    tblAccount9id INT PRIMARY KEY,
     customerCode VARCHAR(30) NOT NULL,
     fullName VARCHAR(100) NOT NULL,
     phoneNumber VARCHAR(24) NOT NULL,
     email VARCHAR(254) NULL,
     membershipStatus VARCHAR(30) NOT NULL,
     CONSTRAINT uqCustomer9Code UNIQUE (customerCode),
-    CONSTRAINT fkCustomer9Account FOREIGN KEY (id) REFERENCES tblAccount9(id)
+    CONSTRAINT fkCustomer9Account FOREIGN KEY (tblAccount9id) REFERENCES tblAccount9(id)
 );
 
 CREATE TABLE tblMembershipCard9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     cardNumber VARCHAR(30) NOT NULL,
     issueDate DATE NOT NULL,
     status VARCHAR(30) NOT NULL,
     discountRate DECIMAL(5,4) NOT NULL,
-    customerId BIGINT NOT NULL,
-    issuedById BIGINT NOT NULL,
+    tblCustomer9id INT NOT NULL,
+    tblSalesEmployee9id INT NOT NULL,
     CONSTRAINT uqMembershipCard9Number UNIQUE (cardNumber),
-    CONSTRAINT uqMembershipCard9Customer UNIQUE (customerId),
+    CONSTRAINT uqMembershipCard9Customer UNIQUE (tblCustomer9id),
     CONSTRAINT ckMembershipCard9Rate CHECK (discountRate >= 0 AND discountRate <= 1),
-    CONSTRAINT fkMembershipCard9Customer FOREIGN KEY (customerId) REFERENCES tblCustomer9(id),
-    CONSTRAINT fkMembershipCard9Issuer FOREIGN KEY (issuedById) REFERENCES tblSalesEmployee9(id)
+    CONSTRAINT fkMembershipCard9Customer FOREIGN KEY (tblCustomer9id) REFERENCES tblCustomer9(tblAccount9id),
+    CONSTRAINT fkMembershipCard9Issuer FOREIGN KEY (tblSalesEmployee9id) REFERENCES tblSalesEmployee9(tblEmployee9id)
 );
 
 -- ===== Rạp, phim và lịch =====
 CREATE TABLE tblScreeningRoom9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     roomName VARCHAR(80) NOT NULL,
     usageStatus VARCHAR(30) NOT NULL,
-    description TEXT NULL,
-    cinemaId BIGINT NOT NULL,
-    CONSTRAINT uqScreeningRoom9Name UNIQUE (cinemaId, roomName),
-    CONSTRAINT fkScreeningRoom9Cinema FOREIGN KEY (cinemaId) REFERENCES tblCinema9(id)
+    description VARCHAR(255) NULL,
+    tblCinema9id INT NOT NULL,
+    CONSTRAINT uqScreeningRoom9Name UNIQUE (tblCinema9id, roomName),
+    CONSTRAINT fkScreeningRoom9Cinema FOREIGN KEY (tblCinema9id) REFERENCES tblCinema9(id)
 );
 
 CREATE TABLE tblSeatType9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     typeName VARCHAR(150) NOT NULL,
     surcharge DECIMAL(12,2) NOT NULL,
-    description TEXT NULL,
+    description VARCHAR(255) NULL,
     CONSTRAINT ckSeatType9Surcharge CHECK (surcharge >= 0)
 );
 
 CREATE TABLE tblCinemaSeat9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     seatCode VARCHAR(30) NOT NULL,
     rowLabel VARCHAR(12) NOT NULL,
     seatNumber INT NOT NULL,
     status VARCHAR(30) NOT NULL,
-    roomId BIGINT NOT NULL,
-    seatTypeId BIGINT NOT NULL,
-    CONSTRAINT uqCinemaSeat9Code UNIQUE (roomId, seatCode),
-    CONSTRAINT uqCinemaSeat9Position UNIQUE (roomId, rowLabel, seatNumber),
-    CONSTRAINT fkCinemaSeat9Room FOREIGN KEY (roomId) REFERENCES tblScreeningRoom9(id),
-    CONSTRAINT fkCinemaSeat9Type FOREIGN KEY (seatTypeId) REFERENCES tblSeatType9(id)
+    tblScreeningRoom9id INT NOT NULL,
+    tblSeatType9id INT NOT NULL,
+    CONSTRAINT uqCinemaSeat9Code UNIQUE (tblScreeningRoom9id, seatCode),
+    CONSTRAINT uqCinemaSeat9Position UNIQUE (tblScreeningRoom9id, rowLabel, seatNumber),
+    CONSTRAINT fkCinemaSeat9Room FOREIGN KEY (tblScreeningRoom9id) REFERENCES tblScreeningRoom9(id),
+    CONSTRAINT fkCinemaSeat9Type FOREIGN KEY (tblSeatType9id) REFERENCES tblSeatType9(id)
 );
 
 CREATE TABLE tblMovie9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
     director VARCHAR(150) NOT NULL,
     genre VARCHAR(80) NOT NULL,
     duration INT NOT NULL,
-    description TEXT NULL,
+    description VARCHAR(1000) NULL,
     showingStatus VARCHAR(30) NOT NULL,
-    actors TEXT NULL,
+    actors VARCHAR(500) NULL,
     poster VARCHAR(500) NULL,
     releaseDate DATE NULL,
     language VARCHAR(60) NULL,
@@ -118,7 +118,7 @@ CREATE TABLE tblMovie9 (
 );
 
 CREATE TABLE tblTimeSlot9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     startTime TIME NOT NULL,
     endTime TIME NOT NULL,
@@ -126,72 +126,72 @@ CREATE TABLE tblTimeSlot9 (
 );
 
 CREATE TABLE tblScreening9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     screeningDate DATE NOT NULL,
     ticketPrice DECIMAL(12,2) NOT NULL,
     status VARCHAR(30) NOT NULL,
-    movieId BIGINT NOT NULL,
-    roomId BIGINT NOT NULL,
-    timeSlotId BIGINT NOT NULL,
-    createdById BIGINT NOT NULL,
+    tblMovie9id INT NOT NULL,
+    tblScreeningRoom9id INT NOT NULL,
+    tblTimeSlot9id INT NOT NULL,
+    tblManager9id INT NOT NULL,
     CONSTRAINT ckScreening9Price CHECK (ticketPrice >= 0),
-    CONSTRAINT fkScreening9Movie FOREIGN KEY (movieId) REFERENCES tblMovie9(id),
-    CONSTRAINT fkScreening9Room FOREIGN KEY (roomId) REFERENCES tblScreeningRoom9(id),
-    CONSTRAINT fkScreening9TimeSlot FOREIGN KEY (timeSlotId) REFERENCES tblTimeSlot9(id),
-    CONSTRAINT fkScreening9Manager FOREIGN KEY (createdById) REFERENCES tblManager9(id)
+    CONSTRAINT fkScreening9Movie FOREIGN KEY (tblMovie9id) REFERENCES tblMovie9(id),
+    CONSTRAINT fkScreening9Room FOREIGN KEY (tblScreeningRoom9id) REFERENCES tblScreeningRoom9(id),
+    CONSTRAINT fkScreening9TimeSlot FOREIGN KEY (tblTimeSlot9id) REFERENCES tblTimeSlot9(id),
+    CONSTRAINT fkScreening9Manager FOREIGN KEY (tblManager9id) REFERENCES tblManager9(tblEmployee9id)
 );
 
 CREATE TABLE tblScreeningCinemaSeat9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     holdExpireTime DATETIME NULL,
     status VARCHAR(30) NOT NULL,
-    screeningId BIGINT NOT NULL,
-    seatId BIGINT NOT NULL,
-    CONSTRAINT uqScreeningCinemaSeat9 UNIQUE (screeningId, seatId),
-    CONSTRAINT fkScreeningCinemaSeat9Screening FOREIGN KEY (screeningId) REFERENCES tblScreening9(id),
-    CONSTRAINT fkScreeningCinemaSeat9Seat FOREIGN KEY (seatId) REFERENCES tblCinemaSeat9(id)
+    tblScreening9id INT NOT NULL,
+    tblCinemaSeat9id INT NOT NULL,
+    CONSTRAINT uqScreeningCinemaSeat9 UNIQUE (tblScreening9id, tblCinemaSeat9id),
+    CONSTRAINT fkScreeningCinemaSeat9Screening FOREIGN KEY (tblScreening9id) REFERENCES tblScreening9(id),
+    CONSTRAINT fkScreeningCinemaSeat9Seat FOREIGN KEY (tblCinemaSeat9id) REFERENCES tblCinemaSeat9(id)
 );
 
 -- ===== Vé và giao dịch =====
 CREATE TABLE tblInvoice9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     invoiceNumber VARCHAR(30) NOT NULL,
     saleTime DATETIME NOT NULL,
     saleChannel VARCHAR(30) NOT NULL,
-    customerId BIGINT NOT NULL,
-    sellerId BIGINT NULL,
-    membershipCardId BIGINT NULL,
+    tblCustomer9id INT NOT NULL,
+    tblSalesEmployee9id INT NULL,
+    tblMembershipCard9id INT NULL,
     CONSTRAINT uqInvoice9Number UNIQUE (invoiceNumber),
-    CONSTRAINT fkInvoice9Customer FOREIGN KEY (customerId) REFERENCES tblCustomer9(id),
-    CONSTRAINT fkInvoice9Seller FOREIGN KEY (sellerId) REFERENCES tblSalesEmployee9(id),
-    CONSTRAINT fkInvoice9Card FOREIGN KEY (membershipCardId) REFERENCES tblMembershipCard9(id)
+    CONSTRAINT fkInvoice9Customer FOREIGN KEY (tblCustomer9id) REFERENCES tblCustomer9(tblAccount9id),
+    CONSTRAINT fkInvoice9Seller FOREIGN KEY (tblSalesEmployee9id) REFERENCES tblSalesEmployee9(tblEmployee9id),
+    CONSTRAINT fkInvoice9Card FOREIGN KEY (tblMembershipCard9id) REFERENCES tblMembershipCard9(id)
 );
 
 CREATE TABLE tblTicket9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     ticketNumber VARCHAR(30) NOT NULL,
     price DECIMAL(12,2) NOT NULL,
-    screeningCinemaSeatId BIGINT NOT NULL,
-    invoiceId BIGINT NOT NULL,
-    membershipCardId BIGINT NULL,
+    tblScreeningCinemaSeat9id INT NOT NULL,
+    tblInvoice9id INT NOT NULL,
+    tblMembershipCard9id INT NULL,
     CONSTRAINT uqTicket9Number UNIQUE (ticketNumber),
-    CONSTRAINT uqTicket9Seat UNIQUE (screeningCinemaSeatId),
+    CONSTRAINT uqTicket9Seat UNIQUE (tblScreeningCinemaSeat9id),
     CONSTRAINT ckTicket9Price CHECK (price >= 0),
-    CONSTRAINT fkTicket9Seat FOREIGN KEY (screeningCinemaSeatId) REFERENCES tblScreeningCinemaSeat9(id),
-    CONSTRAINT fkTicket9Invoice FOREIGN KEY (invoiceId) REFERENCES tblInvoice9(id),
-    CONSTRAINT fkTicket9Card FOREIGN KEY (membershipCardId) REFERENCES tblMembershipCard9(id)
+    CONSTRAINT fkTicket9Seat FOREIGN KEY (tblScreeningCinemaSeat9id) REFERENCES tblScreeningCinemaSeat9(id),
+    CONSTRAINT fkTicket9Invoice FOREIGN KEY (tblInvoice9id) REFERENCES tblInvoice9(id),
+    CONSTRAINT fkTicket9Card FOREIGN KEY (tblMembershipCard9id) REFERENCES tblMembershipCard9(id)
 );
 
 CREATE TABLE tblPayment9 (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     paymentTime DATETIME NOT NULL,
     amount DECIMAL(12,2) NOT NULL,
     paymentMethod VARCHAR(30) NOT NULL,
     status VARCHAR(30) NOT NULL,
     transactionReference VARCHAR(150) NULL,
-    invoiceId BIGINT NOT NULL,
+    tblInvoice9id INT NOT NULL,
     CONSTRAINT ckPayment9Amount CHECK (amount >= 0),
-    CONSTRAINT fkPayment9Invoice FOREIGN KEY (invoiceId) REFERENCES tblInvoice9(id)
+    CONSTRAINT fkPayment9Invoice FOREIGN KEY (tblInvoice9id) REFERENCES tblInvoice9(id)
 );
 
 -- ===== Dữ liệu mẫu =====
@@ -204,19 +204,19 @@ INSERT INTO tblAccount9 (id, username, authenticationData, role, status) VALUES
 (2, 'banhang01', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'SALES', 'Hoạt động'),
 (3, 'khachhang01', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'CUSTOMER', 'Hoạt động');
 
-INSERT INTO tblEmployee9 (id, employeeCode, fullName, cinemaId) VALUES
+INSERT INTO tblEmployee9 (tblAccount9id, employeeCode, fullName, tblCinema9id) VALUES
 (1, 'NV001', 'Trần Thu Hà', 1),
 (2, 'NV002', 'Lê Quang Huy', 1);
-INSERT INTO tblManager9 (id) VALUES (1);
-INSERT INTO tblSalesEmployee9 (id) VALUES (2);
-INSERT INTO tblCustomer9 (id, customerCode, fullName, phoneNumber, email, membershipStatus) VALUES
+INSERT INTO tblManager9 (tblEmployee9id) VALUES (1);
+INSERT INTO tblSalesEmployee9 (tblEmployee9id) VALUES (2);
+INSERT INTO tblCustomer9 (tblAccount9id, customerCode, fullName, phoneNumber, email, membershipStatus) VALUES
 (3, 'KH001', 'Nguyễn Văn An', '0912345678', 'an.nguyen@example.com', 'Thành viên');
 
 INSERT INTO tblSeatType9 (id, typeName, surcharge, description) VALUES
 (1, 'Ghế thường', 0, NULL),
 (2, 'Ghế VIP', 20000, 'Hàng giữa phòng');
 
-INSERT INTO tblScreeningRoom9 (id, roomName, usageStatus, description, cinemaId) VALUES
+INSERT INTO tblScreeningRoom9 (id, roomName, usageStatus, description, tblCinema9id) VALUES
 (1, 'Phòng 01', 'Đang sử dụng', NULL, 1),
 (2, 'Phòng 02', 'Đang sử dụng', NULL, 1),
 (3, 'Phòng 03', 'Đang sử dụng', NULL, 1),
@@ -228,13 +228,13 @@ CREATE TEMPORARY TABLE tmpRow (r VARCHAR(2), idx INT);
 INSERT INTO tmpRow VALUES ('A',1),('B',2),('C',3),('D',4),('E',5),('F',6),('G',7),('H',8),('I',9),('J',10);
 CREATE TEMPORARY TABLE tmpNum (n INT);
 INSERT INTO tmpNum VALUES (1),(2),(3),(4),(5),(6),(7),(8),(9),(10);
-INSERT INTO tblCinemaSeat9 (seatCode, rowLabel, seatNumber, status, roomId, seatTypeId)
+INSERT INTO tblCinemaSeat9 (seatCode, rowLabel, seatNumber, status, tblScreeningRoom9id, tblSeatType9id)
 SELECT CONCAT(r.r, n.n), r.r, n.n, 'Dùng được', room.id, IF(r.r IN ('E','F'), 2, 1)
 FROM tblScreeningRoom9 room
 JOIN tmpRow r ON r.idx <= CASE room.id WHEN 1 THEN 10 WHEN 4 THEN 6 ELSE 8 END
 JOIN tmpNum n
 ORDER BY room.id, r.idx, n.n;
-UPDATE tblCinemaSeat9 SET status = 'Bảo trì' WHERE roomId = 1 AND seatCode = 'J10';
+UPDATE tblCinemaSeat9 SET status = 'Bảo trì' WHERE tblScreeningRoom9id = 1 AND seatCode = 'J10';
 DROP TEMPORARY TABLE tmpRow;
 DROP TEMPORARY TABLE tmpNum;
 
@@ -256,7 +256,7 @@ INSERT INTO tblTimeSlot9 (id, name, startTime, endTime) VALUES
 
 -- Phòng 02 đã có suất 18:00–20:00 ngày 25/11/2026 nên không còn rảnh trong khung giờ này
 -- (và cũng bận với khung 19:00–21:00 vì chồng lấn).
-INSERT INTO tblScreening9 (id, screeningDate, ticketPrice, status, movieId, roomId, timeSlotId, createdById) VALUES
+INSERT INTO tblScreening9 (id, screeningDate, ticketPrice, status, tblMovie9id, tblScreeningRoom9id, tblTimeSlot9id, tblManager9id) VALUES
 (1, '2026-11-25', 80000, 'Đã lập lịch', 2, 2, 5, 1);
-INSERT INTO tblScreeningCinemaSeat9 (holdExpireTime, status, screeningId, seatId)
-SELECT NULL, 'Trống', 1, s.id FROM tblCinemaSeat9 s WHERE s.roomId = 2;
+INSERT INTO tblScreeningCinemaSeat9 (holdExpireTime, status, tblScreening9id, tblCinemaSeat9id)
+SELECT NULL, 'Trống', 1, s.id FROM tblCinemaSeat9 s WHERE s.tblScreeningRoom9id = 2;
