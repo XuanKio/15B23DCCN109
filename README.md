@@ -41,10 +41,13 @@ Các trang JSP gọi lớp điều khiển, lớp điều khiển gọi DAO, DAO
 
 ## Cách chạy
 
-1. Chạy `database/cineman9.sql` rồi `database/tao_user_cineman9.sql` bằng tài khoản root của MySQL, chẳng hạn trong MySQL Workbench.
-2. Sao chép `src/main/resources/db.properties.example` thành `db.properties`. Mặc định file dùng tài khoản `cineman9` / `cineman9`.
-3. Build bằng lệnh `mvn package`, sau đó chép `target/CineMan9.war` vào thư mục `webapps` của Tomcat 10.1 và khởi động Tomcat.
-4. Mở http://localhost:8080/CineMan9/
+Cần có JDK 17 trở lên, Maven và MySQL 8.
+
+1. **Tạo CSDL (một lần):** chạy `database/cineman9.sql` rồi `database/tao_user_cineman9.sql` bằng tài khoản root của MySQL, chẳng hạn trong MySQL Workbench.
+2. **Chạy:** bấm đúp `chay.bat`, hoặc gõ `mvn package cargo:run`. Maven tự tải Tomcat 10.1 (lần đầu hơi lâu), deploy ứng dụng và mở trình duyệt ở http://localhost:8080/CineMan9/. Muốn tắt thì đóng cửa sổ dòng lệnh.
+
+File `src/main/resources/db.properties` được tạo tự động từ `db.properties.example`, dùng tài khoản MySQL `cineman9` / `cineman9`.
+Nếu muốn deploy tay, chép `target/CineMan9.war` vào thư mục `webapps` của Tomcat 10.1.
 
 Tài khoản mẫu (mật khẩu đều là `123456`):
 

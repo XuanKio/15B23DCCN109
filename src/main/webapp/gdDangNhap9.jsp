@@ -8,7 +8,7 @@
         if (username == null || username.isBlank() || password == null || password.isEmpty()) {
             error = "Vui lòng nhập tên đăng nhập và mật khẩu.";
         } else {
-            Optional<Account9> account = new AccountDAO9().checkLogin(username.trim(), password);
+            Optional<Account9> account = new AccountDAO9().checkLogin(username.trim(), password.trim());
             if (account.isEmpty()) {
                 error = "Sai tên đăng nhập hoặc mật khẩu.";
             } else {
@@ -41,13 +41,17 @@
     <div class="card-header">Đăng nhập</div>
     <div class="card-body">
         <% if (error != null) { %><div class="msg error"><%= h(error) %></div><% } %>
-        <form method="post" action="gdDangNhap9.jsp">
+        <form method="post" action="gdDangNhap9.jsp" autocomplete="off">
             <label for="username">Tên đăng nhập</label>
-            <input type="text" id="username" name="username" value="<%= h(username) %>" autofocus>
+            <input type="text" id="username" name="username" value="<%= h(username) %>" autocomplete="off" autocapitalize="off" spellcheck="false" autofocus>
             <label for="password">Mật khẩu</label>
-            <input type="password" id="password" name="password">
+            <input type="password" id="password" name="password" autocomplete="new-password">
             <div class="btn-row"><button type="submit" class="btn">Đăng nhập</button></div>
         </form>
+        <div class="msg note">Tài khoản dùng thử (mật khẩu <b>123456</b>):<br>
+            <b>khachhang01</b>: khách hàng, tìm kiếm thông tin phim<br>
+            <b>quanli01</b>: nhân viên quản lí, lên lịch chiếu<br>
+            Nhớ tắt bộ gõ tiếng Việt khi nhập.</div>
     </div>
 </div>
 </body>
