@@ -34,9 +34,9 @@ public class ScreeningDAO9 extends DAO9 {
     /** Kiểm tra xung đột trong giao dịch đang mở, chỉ với một phòng nếu roomId khác null. */
     public List<Screening9> findOverlappingScreenings(Connection con, LocalDate date, TimeSlot9 timeSlot, Long roomId)
             throws SQLException {
-        String sql = "SELECT s.id, s.roomId FROM tblScreening9 s JOIN tblTimeSlot9 t ON t.id = s.timeSlotId "
+        String sql = "SELECT s.id, s.tblScreeningRoom9id FROM tblScreening9 s JOIN tblTimeSlot9 t ON t.id = s.tblTimeSlot9id "
                 + "WHERE s.screeningDate = ? AND t.startTime < ? AND ? < t.endTime"
-                + (roomId == null ? "" : " AND s.roomId = ?");
+                + (roomId == null ? "" : " AND s.tblScreeningRoom9id = ?");
         List<Screening9> list = new ArrayList<>();
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setDate(1, Date.valueOf(date));
@@ -50,7 +50,7 @@ public class ScreeningDAO9 extends DAO9 {
                     Screening9 s = new Screening9();
                     s.setId(rs.getLong("id"));
                     ScreeningRoom9 room = new ScreeningRoom9();
-                    room.setId(rs.getLong("roomId"));
+                    room.setId(rs.getLong("tblScreeningRoom9id"));
                     s.setRoom(room);
                     s.setScreeningDate(date);
                     list.add(s);
@@ -62,7 +62,7 @@ public class ScreeningDAO9 extends DAO9 {
 
     /** Ghi lịch chiếu bằng kết nối của giao dịch do lớp điều khiển quản lí. */
     public Screening9 saveScreening(Connection con, Screening9 screening) throws SQLException {
-        String sql = "INSERT INTO tblScreening9 (screeningDate, ticketPrice, status, movieId, roomId, timeSlotId, createdById) "
+        String sql = "INSERT INTO tblScreening9 (screeningDate, ticketPrice, status, tblMovie9id, tblScreeningRoom9id, tblTimeSlot9id, tblManager9id) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setDate(1, Date.valueOf(screening.getScreeningDate()));

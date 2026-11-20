@@ -21,8 +21,8 @@ public class ScreeningCinemaSeatDAO9 extends DAO9 {
      * @return số ghế đã tạo
      */
     public int createScreeningSeats(Connection con, Screening9 screening) throws SQLException {
-        String sql = "INSERT INTO tblScreeningCinemaSeat9 (holdExpireTime, status, screeningId, seatId) "
-                + "SELECT NULL, IF(s.status = ?, ?, ?), ?, s.id FROM tblCinemaSeat9 s WHERE s.roomId = ?";
+        String sql = "INSERT INTO tblScreeningCinemaSeat9 (holdExpireTime, status, tblScreening9id, tblCinemaSeat9id) "
+                + "SELECT NULL, IF(s.status = ?, ?, ?), ?, s.id FROM tblCinemaSeat9 s WHERE s.tblScreeningRoom9id = ?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, CinemaSeat9.USABLE);
             ps.setString(2, ScreeningCinemaSeat9.EMPTY);

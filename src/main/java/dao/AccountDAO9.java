@@ -29,15 +29,15 @@ public class AccountDAO9 extends DAO9 {
      */
     public Optional<Account9> checkLogin(String username, String password) throws SQLException {
         String sql = "SELECT a.id, a.username, a.role, a.status, "
-                + "e.employeeCode, e.fullName AS empName, e.cinemaId, c.name AS cinemaName, "
+                + "e.employeeCode, e.fullName AS empName, e.tblCinema9id, c.name AS cinemaName, "
                 + "cu.customerCode, cu.fullName AS cusName, cu.phoneNumber, cu.email, cu.membershipStatus, "
-                + "(m.id IS NOT NULL) AS isManager, (s.id IS NOT NULL) AS isSalesEmployee "
+                + "(m.tblEmployee9id IS NOT NULL) AS isManager, (s.tblEmployee9id IS NOT NULL) AS isSalesEmployee "
                 + "FROM tblAccount9 a "
-                + "LEFT JOIN tblEmployee9 e ON e.id = a.id "
-                + "LEFT JOIN tblCinema9 c ON c.id = e.cinemaId "
-                + "LEFT JOIN tblManager9 m ON m.id = a.id "
-                + "LEFT JOIN tblSalesEmployee9 s ON s.id = a.id "
-                + "LEFT JOIN tblCustomer9 cu ON cu.id = a.id "
+                + "LEFT JOIN tblEmployee9 e ON e.tblAccount9id = a.id "
+                + "LEFT JOIN tblCinema9 c ON c.id = e.tblCinema9id "
+                + "LEFT JOIN tblManager9 m ON m.tblEmployee9id = a.id "
+                + "LEFT JOIN tblSalesEmployee9 s ON s.tblEmployee9id = a.id "
+                + "LEFT JOIN tblCustomer9 cu ON cu.tblAccount9id = a.id "
                 + "WHERE a.username = ? AND a.authenticationData = ?";
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, username);
@@ -76,7 +76,7 @@ public class AccountDAO9 extends DAO9 {
         employee.setEmployeeCode(rs.getString("employeeCode"));
         employee.setFullName(rs.getString("empName"));
         Cinema9 cinema = new Cinema9();
-        cinema.setId(rs.getLong("cinemaId"));
+        cinema.setId(rs.getLong("tblCinema9id"));
         cinema.setName(rs.getString("cinemaName"));
         employee.setCinema(cinema);
         return employee;
