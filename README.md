@@ -54,6 +54,7 @@ Tài khoản mẫu (mật khẩu đều là `123456`):
 | Tài khoản | Vai trò |
 |---|---|
 | `khachhang01` | Khách hàng |
+| `banhang01` | Nhân viên bán hàng (chỉ đăng nhập, chức năng bán hàng chưa cài đặt) |
 | `quanli01` | Nhân viên quản lí (rạp CineMan Hà Đông) |
 
 Dữ liệu mẫu có sẵn một suất chiếu ở Phòng 02, ngày 25/11/2026, khung 18:00–20:00. Khi chọn ngày và khung giờ này (hoặc khung 19:00–21:00 bị chồng giờ), Phòng 02 sẽ không xuất hiện trong danh sách phòng trống.

@@ -14,11 +14,15 @@
             } else {
                 session.invalidate();
                 HttpSession newSession = request.getSession(true);
-                if (account.get() instanceof Manager9) {
-                    newSession.setAttribute("quanli", account.get());
+                Account9 user = account.get();
+                if (user instanceof Manager9) {
+                    newSession.setAttribute("quanli", user);
                     response.sendRedirect("quanli/gdChinhQL9.jsp");
+                } else if (user instanceof SalesEmployee9) {
+                    newSession.setAttribute("banhang", user);
+                    response.sendRedirect("banhang/gdChinhBH9.jsp");
                 } else {
-                    newSession.setAttribute("khachhang", account.get());
+                    newSession.setAttribute("khachhang", user);
                     response.sendRedirect("khachhang/gdChinhKH9.jsp");
                 }
                 return;
