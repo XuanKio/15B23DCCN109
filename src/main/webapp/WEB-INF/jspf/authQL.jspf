@@ -1,0 +1,8 @@
+<%
+    // Trang của nhân viên quản lí: yêu cầu phiên quản lí đã đăng nhập.
+    model.Manager9 quanLi = (model.Manager9) session.getAttribute("quanli");
+    if (quanLi == null) {
+        response.sendRedirect(request.getContextPath() + "/gdDangNhap9.jsp?err=login");
+        return;
+    }
+%>

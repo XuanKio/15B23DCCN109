@@ -1,0 +1,15 @@
+<%
+    Object topUser = session.getAttribute("quanli") != null ? session.getAttribute("quanli") : session.getAttribute("khachhang");
+    String topName = "";
+    if (topUser instanceof model.Manager9) {
+        topName = ((model.Manager9) topUser).getFullName() + " (Nhân viên quản lí)";
+    } else if (topUser instanceof model.Customer9) {
+        topName = ((model.Customer9) topUser).getFullName() + " (Khách hàng)";
+    }
+%>
+<div class="topbar">
+    <span class="brand">CineMan</span>
+    <% if (topUser != null) { %>
+    <span><%= h(topName) %><a href="<%= request.getContextPath() %>/dangXuat9.jsp">Đăng xuất</a></span>
+    <% } %>
+</div>
