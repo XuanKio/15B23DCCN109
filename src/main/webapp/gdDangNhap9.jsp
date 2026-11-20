@@ -48,10 +48,6 @@
             <input type="password" id="password" name="password" autocomplete="new-password">
             <div class="btn-row"><button type="submit" class="btn">Đăng nhập</button></div>
         </form>
-        <div class="msg note">Tài khoản dùng thử (mật khẩu <b>123456</b>):<br>
-            <b>khachhang01</b>: khách hàng, tìm kiếm thông tin phim<br>
-            <b>quanli01</b>: nhân viên quản lí, lên lịch chiếu<br>
-            Nhớ tắt bộ gõ tiếng Việt khi nhập.</div>
     </div>
 </div>
 </body>
