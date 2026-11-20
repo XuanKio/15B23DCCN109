@@ -1,0 +1,30 @@
+<%@ page import="java.math.BigDecimal,java.time.LocalDate,java.time.format.DateTimeFormatter,java.text.NumberFormat,java.util.Locale" %>
+<%!
+    /** Thoát ký tự HTML trước khi in dữ liệu ra trang. */
+    static String h(Object value) {
+        if (value == null) {
+            return "";
+        }
+        return value.toString().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                .replace("\"", "&quot;").replace("'", "&#39;");
+    }
+
+    /** Ngày dạng 25/09/2026. */
+    static String fmtDate(LocalDate d) {
+        return d == null ? "" : d.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    /** Số tiền dạng 90.000. */
+    static String fmtMoney(BigDecimal v) {
+        return v == null ? "" : NumberFormat.getNumberInstance(new Locale("vi", "VN")).format(v);
+    }
+
+    /** Đọc tham số kiểu long, trả null nếu thiếu hoặc sai định dạng. */
+    static Long parseLong(String s) {
+        try {
+            return s == null ? null : Long.valueOf(s.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+%>

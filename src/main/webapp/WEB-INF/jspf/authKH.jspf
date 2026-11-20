@@ -1,0 +1,8 @@
+<%
+    // Trang của khách hàng: yêu cầu phiên khách hàng đã đăng nhập.
+    model.Customer9 khachHang = (model.Customer9) session.getAttribute("khachhang");
+    if (khachHang == null) {
+        response.sendRedirect(request.getContextPath() + "/gdDangNhap9.jsp?err=login");
+        return;
+    }
+%>
