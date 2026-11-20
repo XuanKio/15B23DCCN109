@@ -12,7 +12,9 @@ import java.util.Optional;
 import model.Account9;
 import model.Cinema9;
 import model.Customer9;
+import model.Employee9;
 import model.Manager9;
+import model.SalesEmployee9;
 
 /** Kiểm tra đăng nhập (tiền điều kiện của hai mô-đun). */
 public class AccountDAO9 extends DAO9 {
@@ -22,18 +24,19 @@ public class AccountDAO9 extends DAO9 {
     }
 
     /**
-     * Trả về Customer9 hoặc Manager9 nếu đúng tên đăng nhập và mật khẩu.
+     * Trả về tài khoản khách hàng, quản lí hoặc nhân viên bán hàng nếu đăng nhập hợp lệ.
      * Mật khẩu được so sánh dưới dạng băm SHA-256.
      */
     public Optional<Account9> checkLogin(String username, String password) throws SQLException {
         String sql = "SELECT a.id, a.username, a.role, a.status, "
                 + "e.employeeCode, e.fullName AS empName, e.cinemaId, c.name AS cinemaName, "
                 + "cu.customerCode, cu.fullName AS cusName, cu.phoneNumber, cu.email, cu.membershipStatus, "
-                + "(m.id IS NOT NULL) AS isManager "
+                + "(m.id IS NOT NULL) AS isManager, (s.id IS NOT NULL) AS isSalesEmployee "
                 + "FROM tblAccount9 a "
                 + "LEFT JOIN tblEmployee9 e ON e.id = a.id "
                 + "LEFT JOIN tblCinema9 c ON c.id = e.cinemaId "
                 + "LEFT JOIN tblManager9 m ON m.id = a.id "
+                + "LEFT JOIN tblSalesEmployee9 s ON s.id = a.id "
                 + "LEFT JOIN tblCustomer9 cu ON cu.id = a.id "
                 + "WHERE a.username = ? AND a.authenticationData = ?";
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -44,16 +47,12 @@ public class AccountDAO9 extends DAO9 {
                     return Optional.empty();
                 }
                 Account9 account;
-                if (Account9.ROLE_MANAGER.equals(rs.getString("role")) && rs.getBoolean("isManager")) {
-                    Manager9 m = new Manager9();
-                    m.setEmployeeCode(rs.getString("employeeCode"));
-                    m.setFullName(rs.getString("empName"));
-                    Cinema9 cinema = new Cinema9();
-                    cinema.setId(rs.getLong("cinemaId"));
-                    cinema.setName(rs.getString("cinemaName"));
-                    m.setCinema(cinema);
-                    account = m;
-                } else if (Account9.ROLE_CUSTOMER.equals(rs.getString("role")) && rs.getString("customerCode") != null) {
+                String role = rs.getString("role");
+                if (Account9.ROLE_MANAGER.equals(role) && rs.getBoolean("isManager")) {
+                    account = readEmployee(rs, new Manager9());
+                } else if (Account9.ROLE_SALES.equals(role) && rs.getBoolean("isSalesEmployee")) {
+                    account = readEmployee(rs, new SalesEmployee9());
+                } else if (Account9.ROLE_CUSTOMER.equals(role) && rs.getString("customerCode") != null) {
                     Customer9 c = new Customer9();
                     c.setCustomerCode(rs.getString("customerCode"));
                     c.setFullName(rs.getString("cusName"));
@@ -66,11 +65,21 @@ public class AccountDAO9 extends DAO9 {
                 }
                 account.setId(rs.getLong("id"));
                 account.setUsername(rs.getString("username"));
-                account.setRole(rs.getString("role"));
+                account.setRole(role);
                 account.setStatus(rs.getString("status"));
                 return Optional.of(account);
             }
         }
+    }
+
+    private static Employee9 readEmployee(ResultSet rs, Employee9 employee) throws SQLException {
+        employee.setEmployeeCode(rs.getString("employeeCode"));
+        employee.setFullName(rs.getString("empName"));
+        Cinema9 cinema = new Cinema9();
+        cinema.setId(rs.getLong("cinemaId"));
+        cinema.setName(rs.getString("cinemaName"));
+        employee.setCinema(cinema);
+        return employee;
     }
 
     private static String sha256(String text) {

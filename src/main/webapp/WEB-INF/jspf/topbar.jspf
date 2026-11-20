@@ -1,8 +1,16 @@
 <%
-    Object topUser = session.getAttribute("quanli") != null ? session.getAttribute("quanli") : session.getAttribute("khachhang");
+    Object topUser = session.getAttribute("quanli");
+    if (topUser == null) {
+        topUser = session.getAttribute("banhang");
+    }
+    if (topUser == null) {
+        topUser = session.getAttribute("khachhang");
+    }
     String topName = "";
     if (topUser instanceof model.Manager9) {
         topName = ((model.Manager9) topUser).getFullName() + " (Nhân viên quản lí)";
+    } else if (topUser instanceof model.SalesEmployee9) {
+        topName = ((model.SalesEmployee9) topUser).getFullName() + " (Nhân viên bán hàng)";
     } else if (topUser instanceof model.Customer9) {
         topName = ((model.Customer9) topUser).getFullName() + " (Khách hàng)";
     }
